@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sam's Hub - Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e9ecef;
+        }
+
+        #app {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .section {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+        }
+
+        .dashboard-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .task-list {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .task-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-list .complete-btn,
+        .task-list .remove-btn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .task-list .complete-btn {
+            background-color: #28a745;
+        }
+
+        .task-list .remove-btn {
+            background-color: #dc3545;
+        }
+
+        .task-list .complete-btn:hover {
+            background-color: #218838;
+        }
+
+        .task-list .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        .profile-section {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .profile-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-section .profile-info {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .notification-section {
+            margin-top: 20px;
+        }
+
+        .notification {
+            background-color: #ffeb3b;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Login Section -->
+        <div id="login" class="section">
+            <img src="sams-hub-high-resolution-logo-white.png" alt="Sam's Hub" class="logo">
+            <h2>Login to Dashboard</h2>
+            <form id="loginForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p id="loginError" class="error-message"></p>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="section hidden">
+            <h2 class="dashboard-header">Admin Dashboard</h2>
+            <p>Welcome, Admin! Manage your team and tasks here.</p>
+            <button id="viewEmployeeTasks">View Employee Tasks</button>
+            <ul id="employeeTaskList" class="task-list hidden">
+                <!-- Task list will be populated here for Admin -->
+            </ul>
+            <button id="logoutAdmin">Logout</button>
+        </div>
+
+        <!-- Employee Dashboard -->
+        <div id="employeeDashboard" class="section hidden">
+            <h2 class="dashboard-header">Employee Dashboard</h2>
+
+            <div class="profile-section">
+                <h3>Profile Information</h3>
+                <div class="profile-info">
+                    <strong>Name:</strong> Sehaj Khurana <br>
+                    <strong>Position:</strong> Software Engineer <br>
+                    <strong>Department:</strong> IT
+                </div>
+            </div>
+
+            <button id="viewTasks">View Tasks</button>
+            <ul id="taskList" class="task-list hidden">
+                <!-- Task list will be populated here -->
+            </ul>
+            
+            <!-- Add Task Section -->
+            <div class="add-task-section">
+                <input type="text" id="newTaskInput" placeholder="Enter new task" />
+                <button id="addTaskButton">Add Task</button>
+            </div>
+
+            <div class="notification-section">
+                <h3>Notifications</h3>
+                <div class="notification">
+                    <strong>Reminder:</strong> Please submit your project report by the end of the week.
+                </div>
+                <div class="notification">
+                    <strong>Update:</strong> System maintenance scheduled for Friday, 10 PM.
+                </div>
+            </div>
+
+            <button id="logoutEmployee">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const loginError = document.getElementById('loginError');
+            const adminDashboard = document.getElementById('adminDashboard');
+            const employeeDashboard = document.getElementById('employeeDashboard');
+            const loginSection = document.getElementById('login');
+            const taskList = document.getElementById('taskList');
+            const employeeTaskList = document.getElementById('employeeTaskList');
+            const viewTasksButton = document.getElementById('viewTasks');
+            const viewEmployeeTasksButton = document.getElementById('viewEmployeeTasks');
+            const addTaskButton = document.getElementById('addTaskButton');
+            const newTaskInput = document.getElementById('newTaskInput');
+
+            // Dummy user data
+            const users = {
+                admin: { username: 'admin', password: 'admin123', role: 'admin' },
+                employee: { username: 'employee', password: 'employee123', role: 'employee' }
+            };
+
+            // Dummy tasks for employees
+            const tasks = [
+                { task: "Complete project report", completed: false },
+                { task: "Attend team meeting at 3 PM", completed: false },
+                { task: "Submit timesheet by Friday", completed: false },
+                { task: "Review design updates", completed: false }
+            ];
+
+            // Login form handling
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                loginError.textContent = '';
+
+                for (const user in users) {
+                    if (users[user].username === username && users[user].password === password) {
+                        loginSection.classList.add('hidden');
+                        if (users[user].role === 'admin') {
+                            adminDashboard.classList.remove('hidden');
+                        } else if (users[user].role === 'employee') {
+                            employeeDashboard.classList.remove('hidden');
+                        }
+                        return;
+                    }
+                }
+
+                loginError.textContent = 'Invalid username or password';
+            });
+
+            // View tasks button for employees
+            viewTasksButton.addEventListener('click', () => {
+                taskList.classList.toggle('hidden');
+                if (!taskList.classList.contains('hidden')) {
+                    taskList.innerHTML = tasks.map((task, index) => `
+                        <li>
+                            ${task.task}
+                            <div>
+                                <button class="complete-btn" onclick="markComplete(${index})">
+                                    ${task.completed ? 'Completed' : 'Mark Complete'}
+                                </button>
+                                <button class="remove-btn" onclick="removeTask(${index})">Remove Task</button>
+                            </div>
+                        </li>`).join('');
+                }
+            });
+
+            // View employee tasks button for admin
+            viewEmployeeTasksButton.addEventListener('click', () => {
+                employeeTaskList.classList.toggle('hidden');
+                if (!employeeTaskList.classList.contains('hidden')) {
+                    employeeTaskList.innerHTML = tasks.map((task, index) => `
+                        <li>
+                            ${task.task}
+                            <div>
+                                <button class="complete-btn" onclick="markComplete(${index})">
+                                    ${task.completed ? 'Completed' : 'Mark Complete'}
+                                </button>
+                                <button class="remove-btn" onclick="removeTask(${index})">Remove Task</button>
+                            </div>
+                        </li>`).join('');
+                }
+            });
+
+            // Add task button handling
+            addTaskButton.addEventListener('click', () => {
+                const newTask = newTaskInput.value;
+                if (newTask) {
+                    tasks.push({ task: newTask, completed: false });
+                    newTaskInput.value = '';
+                    if (!taskList.classList.contains('hidden')) {
+                        viewTasksButton.click(); // Refresh task list
+                    }
+                } else {
+                    alert('Please enter a task.');
+                }
+            });
+
+            // Logout buttons handling
+            document.getElementById('logoutAdmin').addEventListener('click', () => {
+                adminDashboard.classList.add('hidden');
+                loginSection.classList.remove('hidden');
+            });
+
+            document.getElementById('logoutEmployee').addEventListener('click', () => {
+                employeeDashboard.classList.add('hidden');
+                loginSection.classList.remove('hidden');
+            });
+        });
+
+        // Function to mark tasks as complete
+        function markComplete(index) {
+            const tasks = document.getElementById('taskList').children;
+            if (tasks[index]) {
+                tasks[index].querySelector('.complete-btn').textContent = 'Completed';
+                tasks[index].style.textDecoration = 'line-through';
+                tasks[index].querySelector('.complete-btn').disabled = true; // Disable the button
+            }
+        }
+
+        // Function to remove tasks
+        function removeTask(index) {
+            const tasks = document.getElementById('taskList').children;
+            if (tasks[index]) {
+                tasks[index].remove(); // Remove the task from the list
+            }
+        }
+    </script>
+</body>
+</html>
